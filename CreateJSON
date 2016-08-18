@@ -1,0 +1,235 @@
+Create JSON Object Using Jackson in Java
+
+Jackson is a multi-purpose Java library for processing JSON. Jackson aims to be the best possible combination of fast, correct, lightweight, and ergonomic for developers. This article explains how to use Jackson library to build JSON. We are building the following JSON content. 
+
+ 
+{
+  "testName" : "Login",
+  "testModule" : "Dashboard",
+  "testType" : "Regression",
+  "testSteps" : [ {
+    "id" : 1,
+    "step" : "Open Browser"
+  }, {
+    "id" : 2,
+    "step" : "Enter user name"
+  }, {
+    "id" : 3,
+    "step" : "Enter user password"
+  }, {
+    "id" : 4,
+    "step" : "Click on Login button"
+  } ],
+  "verification" : "Logout link should display",
+  "note" : ""
+}
+Create a maven-based project and add the Jackson library dependency in the pom.xml file
+
+<dependency>
+    <groupId>com.fasterxml.jackson.dataformat</groupId>
+    <artifactId>jackson-dataformat-xml</artifactId>
+    <version>2.4.0</version>
+</dependency>
+Create TestSteps and TestCases class with Jackson annotations.
+
+TestSteps.java
+
+package com.example.Json;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class TestStepsJacksonAnnotation {
+    @JsonProperty("Id")
+    private int Id;
+    @JsonProperty("Step")
+    private String Step;
+
+    public TestStepsJacksonAnnotation() {
+    }
+
+    public TestStepsJacksonAnnotation(int id, String step) {
+        Id = id;
+        Step = step;
+    }
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
+    }
+
+    public String getStep() {
+        return Step;
+    }
+
+    public void setStep(String step) {
+        Step = step;
+    }
+}
+TestCases.java
+
+package com.example.Json;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class TestCasesJacksonAnnotation {
+    @JsonProperty("TestName")
+    private String TestName;
+    @JsonProperty("TestModule")
+    private String TestModule;
+    @JsonProperty("TestType")
+    private String TestType;
+    @JsonProperty("TestSteps")
+    private List TestSteps;
+    @JsonProperty("Verification")
+    private String Verification;
+    @JsonProperty("Note")
+    private String Note;
+
+    public TestCasesJacksonAnnotation() {
+    }
+
+    public TestCasesJacksonAnnotation(String testName, String testModule, String testType, List<com.example.Json.TestSteps> testSteps, String verification, String note) {
+        TestName = testName;
+        TestModule = testModule;
+        TestType = testType;
+        TestSteps = testSteps;
+        Verification = verification;
+        Note = note;
+    }
+
+    public String getTestName() {
+        return TestName;
+    }
+
+    public void setTestName(String testName) {
+        TestName = testName;
+    }
+
+    public String getTestModule() {
+        return TestModule;
+    }
+
+    public void setTestModule(String testModule) {
+        TestModule = testModule;
+    }
+
+    public String getTestType() {
+        return TestType;
+    }
+
+    public void setTestType(String testType) {
+        TestType = testType;
+    }
+
+    public List<com.example.Json.TestSteps> getTestSteps() {
+        return TestSteps;
+    }
+
+    public void setTestSteps(List<com.example.Json.TestSteps> testSteps) {
+        TestSteps = testSteps;
+    }
+
+    public String getVerification() {
+        return Verification;
+    }
+
+    public void setVerification(String verification) {
+        Verification = verification;
+    }
+
+    public String getNote() {
+        return Note;
+    }
+
+    public void setNote(String note) {
+        Note = note;
+    }
+}
+Write the following code in the class "CreateSimpleJSonWithJackson.java"
+
+package com.example.Json;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+public class CreateSimpleJSonWithJackson {
+    public static void main(String[] args)
+    {
+    TestCasesJacksonAnnotation testCases= new TestCasesJacksonAnnotation();
+        testCases.setTestName("Login");
+        testCases.setTestModule("Dashboard");
+        testCases.setTestType("Regression");
+        List testSteps=new ArrayList();
+        testSteps.add(new TestSteps(1,"Open Browser"));
+        testSteps.add(new TestSteps(2,"Enter user name"));
+        testSteps.add(new TestSteps(3,"Enter user password"));
+        testSteps.add(new TestSteps(4,"Click on Login button"));
+        testCases.setTestSteps(testSteps);
+        testCases.setVerification("Logout link should display");
+        testCases.setNote("");
+        //create a file writer
+        FileWriter writer = null;
+        //create a Jackson Object Mapper
+        ObjectMapper objectMapper=new ObjectMapper();
+        String TestCasesString="";
+        //Use Object Mapper to get TestCase Object as a string
+        try {
+            //Write Jackson Json with Pretty Print
+            TestCasesString=objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(testCases);
+            //print Json string to console
+            System.out.println(TestCasesString);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+       //Initialize file writer
+        try {
+            writer = new FileWriter(new File("testJackson.json"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Write out content to a file
+        try {
+            BufferedWriter bw = new BufferedWriter(writer);
+            bw.write(TestCasesString);
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+}
+
+Run the code and see the result on the console output. A file "testJackson.json" is created with the following content
+
+{
+  "testName" : "Login",
+  "testModule" : "Dashboard",
+  "testType" : "Regression",
+  "testSteps" : [ {
+    "id" : 1,
+    "step" : "Open Browser"
+  }, {
+    "id" : 2,
+    "step" : "Enter user name"
+  }, {
+    "id" : 3,
+    "step" : "Enter user password"
+  }, {
+    "id" : 4,
+    "step" : "Click on Login button"
+  } ],
+  "verification" : "Logout link should display",
+  "note" : ""
+}
