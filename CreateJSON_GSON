@@ -1,0 +1,224 @@
+Create Json Object Using Gson in Java
+
+Google Gson is a Java library that can be used to convert Java Objects into respective JSON format. This article explains how to use Google Gson to convert Java Object to JSon and write content to a file. We are building the following Json content. 
+
+ 
+
+{
+  "TestName": "Login",
+  "TestModule": "Dashboard",
+  "TestType": "Regression",
+  "TestSteps": [
+    {
+      "Id": 1,
+      "Step": "Open Browser"
+    },
+    {
+      "Id": 2,
+      "Step": "Enter user name"
+    },
+    {
+      "Id": 3,
+      "Step": "Enter user password"
+    },
+    {
+      "Id": 4,
+      "Step": "Click on Login button"
+    }
+  ],
+  "Verification": "Logout link should display",
+  "Note": ""
+}
+Create a maven based project and add Google Gson dependency in the pom.xml file
+
+<dependency>
+ <groupId>com.google.code.gson</groupId>
+ <artifactId>gson</artifactId>
+ <version>2.3.1</version>
+</dependency>
+Create Java Object TestCases and TestSteps
+
+TestSteps.java
+
+package com.example.Json;
+
+public class TestSteps {
+    //define id field
+    private int Id;
+    //define step field
+    private String Step;
+    //create a construct
+    public TestSteps() {
+    }
+
+    public TestSteps(int id, String step) {
+        Id = id;
+        Step = step;
+    }
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
+    }
+
+    public String getStep() {
+        return Step;
+    }
+
+    public void setStep(String step) {
+        Step = step;
+    }
+}
+
+TestCases.java
+
+package com.example.Json;
+import java.util.List;
+public class TestCases {
+    //define TestName filed
+    private String TestName;
+    //define TestModule field
+    private String TestModule;
+    //define TestType field
+    private String TestType;
+    //define TestSteps field
+    private List TestSteps;
+    //define Verification field
+    private String Verification;
+    //define Note field
+    private String Note;
+    //create an empty construct
+    public TestCases() {
+    }
+    //create a construct with all the fields
+    public TestCases(String testName, String testModule, String testType, List<com.example.Json.TestSteps> testSteps, String verification, String note) {
+        TestName = testName;
+        TestModule = testModule;
+        TestType = testType;
+        TestSteps = testSteps;
+        Verification = verification;
+        Note = note;
+    }
+    public String getTestName() {
+        return TestName;
+    }
+
+    public void setTestName(String testName) {
+        TestName = testName;
+    }
+
+    public String getTestModule() {
+        return TestModule;
+    }
+
+    public void setTestModule(String testModule) {
+        TestModule = testModule;
+    }
+
+    public String getTestType() {
+        return TestType;
+    }
+
+    public void setTestType(String testType) {
+        TestType = testType;
+    }
+
+    public List<com.example.Json.TestSteps> getTestSteps() {
+        return TestSteps;
+    }
+
+    public void setTestSteps(List<com.example.Json.TestSteps> testSteps) {
+        TestSteps = testSteps;
+    }
+
+    public String getVerification() {
+        return Verification;
+    }
+
+    public void setVerification(String verification) {
+        Verification = verification;
+    }
+
+    public String getNote() {
+        return Note;
+    }
+
+    public void setNote(String note) {
+        Note = note;
+    }
+}
+
+Write the following code in the CreateSimpleJsonWithGson.java class
+
+package com.example.Json;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CreateSimpleJasonWithGson {
+    public static void main(String[] args)
+    {
+    TestCases testCases=new TestCases();
+        testCases.setTestName("Login");
+        testCases.setTestModule("Dashboard");
+        testCases.setTestType("Regression");
+        List testSteps=new ArrayList();
+        testSteps.add(new TestSteps(1,"Open Browser"));
+        testSteps.add(new TestSteps(2,"Enter user name"));
+        testSteps.add(new TestSteps(3,"Enter user password"));
+        testSteps.add(new TestSteps(4,"Click on Login button"));
+        testCases.setTestSteps(testSteps);
+        testCases.setVerification("Logout link should display");
+        testCases.setNote("");
+        Gson gson=new GsonBuilder().setPrettyPrinting().create();
+        System.out.println( gson.toJson(testCases));
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(new File("testGson.json"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            BufferedWriter bw = new BufferedWriter(writer);
+            bw.write(gson.toJson(testCases).toString());
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+}
+Run the code and see the result on the console. A file "testGson.json" is created
+
+{
+  "TestName": "Login",
+  "TestModule": "Dashboard",
+  "TestType": "Regression",
+  "TestSteps": [
+    {
+      "Id": 1,
+      "Step": "Open Browser"
+    },
+    {
+      "Id": 2,
+      "Step": "Enter user name"
+    },
+    {
+      "Id": 3,
+      "Step": "Enter user password"
+    },
+    {
+      "Id": 4,
+      "Step": "Click on Login button"
+    }
+  ],
+  "Verification": "Logout link should display",
+  "Note": ""
+}
